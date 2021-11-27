@@ -4,6 +4,7 @@
 library(shiny)
 data("train.csv")
 house <- read_csv("train.csv")
+
 # Define UI for application with tabbies that do stuff 
 shinyUI(fluidPage(
   navbarPage(
@@ -27,7 +28,7 @@ shinyUI(fluidPage(
                     choices = c("Lot Size"="LotArea", "Quality" = "OverallQual",
                                 "Condition" = "OverallCond", "Year Built" = 
                                 "YearBuilt", "Square Footage" = "GrLivArea", 
-                                "# of Bedrooms" = "Bedroom", "Total # of Rooms" = 
+                                "# of Bedrooms" = "BedroomAbvGr", "Total # of Rooms" = 
                                 "TotRmsAbvGrd")),
         br(),
         h4("Type of presentation"),
@@ -35,27 +36,23 @@ shinyUI(fluidPage(
           list("Histogram" = "1", "Numeric Summary" = "2", "Scatterplot" = "3"), 
         selected = "1"),
         br(),
-        
-        sliderInput("range", "Range of Variable:",
-                    min = 1,
-                    max = 50,
+        minY <- min(house$SalePrice),
+        maxY <- max(house$SalePrice),
+        sliderInput("rangeY", "Price Range:",
+                    min = minY,
+                    max = maxY,
                     value = 30)
-                     ),
+                     ), # This ends Side Panel ED
                      
     # Show a plot of the generated distribution
                      mainPanel(
-                         plotOutput("distPlot")
-                         #br(),
-                         #plotOutput("disPlotmodel"),
-                         #dataTableOutput("summary"),
-                         #box(
-                          # title = "Data Summary",
+                         plotOutput("distPlot"),
+                         plotOutput("scatterPlotmodel"),
+                         #box(title = "Data Summary",
                            #solidHeader = TRUE,
-                           #width = 6,
-                           #height = 142,
-                           #verbatimTextOutput("summaryDset")
+                           verbatimTextOutput("summaryDset")
                          )
-                     )# This ends DE SidebarPanel 
+                     )# This ends DE mainPanel 
                  ) # This ends Data Exploration tab
         ),
         tabPanel("Modeling",
