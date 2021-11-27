@@ -1,26 +1,31 @@
-#
-# This is the server logic of a Shiny web application. You can run the
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
+#ST558 Kristi Ramey - FINAL!!! :)
 
 library(shiny)
+library(tidyverse)
+library(DT)
+data("train.csv")
+house <- read_csv("train.csv")
 
-# Define server logic required to draw a histogram
-shinyServer(function(input, output) {
-
+# Define server logic to plot a histogram, scatterplot, and summary
+shinyServer(function(input, output, session) {
+    
+   # output$summaryDset <- renderPrint({
+        #summary(house[[input$var]])
+    #})
+    
     output$distPlot <- renderPlot({
-
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
-
+        var <- input$var
+        ggplot(data = house) +
+        geom_histogram(aes_string(x = input$var), color = 'black', fill = 'blue')
     })
-
+    
+   # output$distPlotmodel <- renderPlot({
+        #var <- input$var
+       # ggplot(data = house, aes(x = YrSold, y = SalePrice)) +
+         #   geom_point()
+        
+  #  })
+    
+    
 })
+
