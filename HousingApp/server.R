@@ -5,7 +5,9 @@ library(tidyverse)
 library(DT)
 data("train.csv")
 house <- read_csv("train.csv")
-Price <- house$SalePrice
+#subset data to interesting variables
+house %>% select(LotArea, OverallQual, OverallCond, YearBuilt, GrLivArea, 
+                 BedroomAbvGr, TotRmsAbvGrd, SalePrice)
 
 # Define server logic to plot a histogram, scatterplot, and summary
 shinyServer(function(input, output, session) {
@@ -26,15 +28,12 @@ shinyServer(function(input, output, session) {
     output$scatterPlotmodel <- renderPlot({
         var <- input$var
         price <- house$SalePrice
-        ggplot(data = house, aes(x = !!sym("var"), y = SalePrice)) +
+        ggplot(data = house, aes(x = !!sym(var), y = SalePrice)) +
             geom_point()
-        #g <- ggplot(data = house) 
-        #g + ggplot(aes_string(x = house$LotArea, y = house$SalePrice)) +
-        #ggplot(aes(x = !!sym("var"), y = !!sym("Price"))) +
-        #geom_point()
+
         
     })
-    
+
     
 })
 
