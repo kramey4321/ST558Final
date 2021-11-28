@@ -15,7 +15,29 @@ shinyUI(fluidPage(
     title = "Housing Prices",
     
     tabPanel("About",
-      h1("This is the about page")
+      h1("Predicting Housing Prices"),
+      h3("Hello, and welcome to my app that let's you explore different 
+         variables that can contribute to the sale price of a house.  This project
+         is an offshoot of a Kaggle competition my students recently attempted.  
+         After two weeks of amazing lessons from our dear Professor, Craig and my 
+        students tried their hand at predicting the sale price.  They were proud of
+        their results, but then (of course) asked what our ranking in the competition
+        was, so the idea was born to kill two birds with one stone."),
+      h3("The dataset comes from this ", 
+    a(href = "https://www.kaggle.com/c/house-prices-advanced-regression-techniques", 
+      code("kaggle competion")), "along with its discription."), 
+    h3("At the top, you will see the following tabs:"),
+    h3(strong("Data Exploration")),
+    h4("This section let's you play around with the data. You get 
+        to select a variable, see its distribution and see it's relationship to 
+       the sale price."),
+    h3(strong("Modeling")),
+    h4("Here you can look at different models for sale price depending on which
+       exploratory variables you select."),
+    h3(strong("Data")),
+    h4("In theory, this is where you can select what data you want to take with you"),
+    img(src = "houses.jpg", height = 140, width = 400)
+    
       #End the about panel
         ),
     
@@ -41,18 +63,12 @@ shinyUI(fluidPage(
         br(),
         minY <- min(house$SalePrice),
         maxY <- max(house$SalePrice),
-        minX <- min(house$input.var),
-        maxX <- max(house$input.var),
         sliderInput("rangeY", "Price Range:",
                     min = minY,
                     max = maxY,
                     value = 30
-                     ),
-        sliderInput("rangeX", "Variable Range",
-                    min = minX,
-                    max = maxX,
-                    value = 30
-                    )), # This ends Side Panel ED
+                     )
+        ), # This ends Side Panel ED
                      
     # Show a plot of the generated distribution
                      mainPanel(
@@ -76,10 +92,22 @@ shinyUI(fluidPage(
                           "YearBuilt", "Square Footage" = "GrLivArea", 
                         "# of Bedrooms" = "BedroomAbvGr", "Total # of Rooms" = 
                              "TotRmsAbvGrd"),
-              width="100%")
-                     ), #This ends sidebarPanel
+              width="100%"),
+                     
+          #Online code to add a train/test split 
+          
+           sliderInput("Slider1", h3("Train/Test Split %"),
+              min = 0, 
+              max = 100,
+              value = 75
+            ),
+          textOutput("cntTrain"),
+          textOutput("cntTest"),
+          ), #This ends sidebarPanel
+
                      mainPanel(
-                         plotOutput("distPlotmodel")
+                      
+                       verbatimTextOutput("Model")
                      )#This ends mainPanel
                  ) #This ends sidebarLayout
                  
@@ -88,10 +116,10 @@ shinyUI(fluidPage(
         tabPanel("Data",
                  sidebarLayout(
                      sidebarPanel(
-                         h1("Words!")
+                         h1("Pick what you want")
                      ), #This ends sidebarPanel
                      mainPanel(
-                         h1("More words!")
+                         h1("Code to give it to you")
                      )#This ends mainPanel
                  ) #This ends sidebarLayout
                  

@@ -11,9 +11,7 @@ house %>% select(LotArea, OverallQual, OverallCond, YearBuilt, GrLivArea,
 
 # Define server logic to plot a histogram, scatterplot, and summary
 shinyServer(function(input, output, session) {
-    
-    minY <- min(house$SalePrice)
-    maxY <- max(house$SalePrice)
+
     
     output$summaryDset <- renderPrint({
         summary(house[[input$var]])
@@ -33,7 +31,29 @@ shinyServer(function(input, output, session) {
 
         
     })
+    # Server stuff for Modeling:
+
+   # f <- reactive({
+       #as.formula(paste(SalePrice ~ , data = house))
+    #})
 
     
+    
+    output$Model <- renderPrint({
+        GeneralLinearModel <- glm(SalePrice ~ LotArea + OverallCond, data = house)
+        summary(GeneralLinearModel)
+        })
+    
 })
+    #output$Model_new <-
+       # renderPrint(
+            #stargazer(
+                #lm(),
+                #type = "text",
+               # title = "Model Results",
+               # digits = 1,
+                #out = "table1.txt"
+            #)
+        #)
+#)
 
