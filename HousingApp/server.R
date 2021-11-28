@@ -6,7 +6,7 @@ library(DT)
 data("train.csv")
 house <- read_csv("train.csv")
 #subset data to interesting variables
-house %>% select(LotArea, OverallQual, OverallCond, YearBuilt, GrLivArea, 
+housesub <- house %>% select(LotArea, OverallQual, OverallCond, YearBuilt, GrLivArea, 
                  BedroomAbvGr, TotRmsAbvGrd, SalePrice)
 
 # Define server logic to plot a histogram, scatterplot, and summary

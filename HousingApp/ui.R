@@ -6,7 +6,8 @@ library(shiny)
 
 data("train.csv")
 house <- read_csv("train.csv")
-
+housesub <- house %>% select(LotArea, OverallQual, OverallCond, YearBuilt, GrLivArea, 
+                             BedroomAbvGr, TotRmsAbvGrd, SalePrice)
 
 # Define UI for application with tabbies that do stuff 
 shinyUI(fluidPage(
@@ -61,8 +62,8 @@ shinyUI(fluidPage(
           list("Histogram" = "1", "Numeric Summary" = "2", "Scatterplot" = "3"), 
         selected = "1"),
         br(),
-        minY <- min(house$SalePrice),
-        maxY <- max(house$SalePrice),
+        minY <- min(housesub$SalePrice),
+        maxY <- max(housesub$SalePrice),
         sliderInput("rangeY", "Price Range:",
                     min = minY,
                     max = maxY,
@@ -102,7 +103,7 @@ shinyUI(fluidPage(
               value = 75
             ),
           textOutput("cntTrain"),
-          textOutput("cntTest"),
+          textOutput("cntTest")
           ), #This ends sidebarPanel
 
                      mainPanel(
@@ -114,12 +115,54 @@ shinyUI(fluidPage(
         ), #This ends Modeling tab
         
         tabPanel("Data",
-                 sidebarLayout(
-                     sidebarPanel(
-                         h1("Pick what you want")
-                     ), #This ends sidebarPanel
-                     mainPanel(
-                         h1("Code to give it to you")
+                   sidebarPanel(
+                     # Create a filter for houses
+                     selectInput(
+                       inputId = "selectedhouses",
+                       label = "Filter by house(s)",
+                       choices = unique(housesub),
+                       selected = unique(housesub),
+                       multiple = TRUE,
+                       selectize = TRUE
+                     ),
+                     # Create a filter for the variables.
+                     selectInput(
+                       inputId = "selectedvar",
+                       label = "Filter by variable(s)",
+                       choices = c("Lot Size"="LotArea", "Quality" = "OverallQual",
+                                     "Condition" = "OverallCond", "Year Built" = 
+                                       "YearBuilt", "Square Footage" = "GrLivArea", 
+                                     "# of Bedrooms" = "BedroomAbvGr", "Total # of Rooms" = 
+                                       "TotRmsAbvGrd")),
+                       selected =  c("Lot Size"="LotArea", "Quality" = "OverallQual",
+                                     "Condition" = "OverallCond", "Year Built" = 
+                                       "YearBuilt", "Square Footage" = "GrLivArea", 
+                                     "# of Bedrooms" = "BedroomAbvGr", "Total # of Rooms" = 
+                                       "TotRmsAbvGrd")),
+                       multiple = TRUE,
+                       selectize = TRUE
+                     ),
+                     # Create a filter for the columns to display.
+                     selectInput(
+                       inputId = "selectedCols",
+                       label = "Filter Columns",
+                       choices = colnames(countyData),
+                       selected = colnames(countyData),
+                       multiple = TRUE,
+                       selectize = TRUE
+                     ),
+                     # Create a download button to download the data set.
+                     sidebarPanel(downloadButton("downloadData", "Download"))
+                   ),
+                   # Display the filtered data on the main panel.
+                   mainPanel(
+                     dataTableOutput(outputId = "tab")
+                 #sidebarLayout(
+                  #   sidebarPanel(
+                   #      h1("Pick what you want")
+                    # ), #This ends sidebarPanel
+                     #mainPanel(
+                      #   h1("Code to give it to you")
                      )#This ends mainPanel
                  ) #This ends sidebarLayout
                  
@@ -127,5 +170,5 @@ shinyUI(fluidPage(
         #This ends navbarPage
     )
     #This ends ShinyUI Fluidpage
-))
+)
 
