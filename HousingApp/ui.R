@@ -17,7 +17,7 @@ shinyUI(fluidPage(
     
     tabPanel("About",
       h1("Predicting Housing Prices"),
-      h3("Hello, and welcome to my app that let's you explore different 
+      h3("Hello, and welcome to my app that lets you explore different 
          variables that can contribute to the sale price of a house.  This project
          is an offshoot of a Kaggle competition my students recently attempted.  
          After two weeks of amazing lessons from our dear Professor, Craig and my 
@@ -64,10 +64,10 @@ shinyUI(fluidPage(
         br(),
         minY <- min(housesub$SalePrice),
         maxY <- max(housesub$SalePrice),
-        sliderInput("rangeY", "Price Range:",
+        sliderInput("priceED", "Price Range:",
                     min = minY,
                     max = maxY,
-                    value = 30
+                    value = c(minY, maxY)
                      )
         ), # This ends Side Panel ED
                      
@@ -116,47 +116,57 @@ shinyUI(fluidPage(
         
         tabPanel("Data",
                    sidebarPanel(
-                     # Create a filter for houses
-                     selectInput(
-                       inputId = "selectedhouses",
-                       label = "Filter by house(s)",
-                       choices = unique(housesub),
-                       selected = unique(housesub),
-                       multiple = TRUE,
-                       selectize = TRUE
+                     # Create a filter for houses - seems silly, taking out
+                     #selectInput(
+                      # inputId = "selectedhouses",
+                       #label = "Filter by house(s)",
+                      # choices = unique(housesub),
+                      # selected = unique(housesub),
+                      # multiple = TRUE,
+                       #selectize = TRUE
+                   #  ),
+                     # Create a filter for Price - hmm...How can I do a range?...
+                     # A slider!!!
+                     
+                     minY <- min(housesub$SalePrice),
+                     maxY <- max(housesub$SalePrice),
+                     sliderInput("selectedprices", "Price Range:",
+                                             min = minY,
+                                             max = maxY,
+                                             value = c(minY, maxY)
                      ),
                      # Create a filter for the variables.
                      selectInput(
-                       inputId = "selectedvar",
-                       label = "Filter by variable(s)",
-                       choices = c("Lot Size"="LotArea", "Quality" = "OverallQual",
-                                     "Condition" = "OverallCond", "Year Built" = 
-                                       "YearBuilt", "Square Footage" = "GrLivArea", 
-                                     "# of Bedrooms" = "BedroomAbvGr", "Total # of Rooms" = 
-                                       "TotRmsAbvGrd")),
-                       selected =  c("Lot Size"="LotArea", "Quality" = "OverallQual",
-                                     "Condition" = "OverallCond", "Year Built" = 
-                                       "YearBuilt", "Square Footage" = "GrLivArea", 
-                                     "# of Bedrooms" = "BedroomAbvGr", "Total # of Rooms" = 
-                                       "TotRmsAbvGrd")),
-                       multiple = TRUE,
-                       selectize = TRUE
+                      inputId = "selectedvar",
+                     label = "Filter by variable(s)",
+                     choices = c("Lot Size"="LotArea", "Quality" = "OverallQual",
+                            "Condition" = "OverallCond", "Year Built" = 
+                             "YearBuilt", "Square Footage" = "GrLivArea", 
+                            "# of Bedrooms" = "BedroomAbvGr", "Total # of Rooms" = 
+                              "TotRmsAbvGrd"),
+                     selected =  c("Lot Size"="LotArea", "Quality" = "OverallQual",
+                                  "Condition" = "OverallCond", "Year Built" = 
+                                  "YearBuilt", "Square Footage" = "GrLivArea", 
+                               "# of Bedrooms" = "BedroomAbvGr", "Total # of Rooms" = 
+                                 "TotRmsAbvGrd"),
+                      multiple = TRUE,
+                     selectize = TRUE
                      ),
                      # Create a filter for the columns to display.
-                     selectInput(
-                       inputId = "selectedCols",
-                       label = "Filter Columns",
-                       choices = colnames(countyData),
-                       selected = colnames(countyData),
-                       multiple = TRUE,
-                       selectize = TRUE
-                     ),
+                    # selectInput(
+                     #  inputId = "selectedCols",
+                      # label = "Filter Columns",
+                       #choices = colnames(countyData),
+                       #elected = colnames(countyData),
+                      # multiple = TRUE,
+                      # selectize = TRUE
+                    # ),
                      # Create a download button to download the data set.
                      sidebarPanel(downloadButton("downloadData", "Download"))
                    ),
                    # Display the filtered data on the main panel.
                    mainPanel(
-                     dataTableOutput(outputId = "tab")
+                    dataTableOutput(outputId = "tab")
                  #sidebarLayout(
                   #   sidebarPanel(
                    #      h1("Pick what you want")

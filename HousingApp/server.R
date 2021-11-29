@@ -12,25 +12,33 @@ housesub <- house %>% select(LotArea, OverallQual, OverallCond, YearBuilt, GrLiv
 # Define server logic to plot a histogram, scatterplot, and summary
 shinyServer(function(input, output, session) {
 
+    #Filtering the data based on price range
+    housesubED <- reactive({
+        housesub %>% filter((SalePrice >= input$priceED[2]) & 
+                                          (SalePrice <= input$priceED[1]))
+    
     
     output$summaryDset <- renderPrint({
-        summary(house[[input$var]])
+        summary(housesubED[[input$var]])
     })
     
     output$distPlot <- renderPlot({
         var <- input$var
-        ggplot(data = house) + 
+        ggplot(data = housesubED) + 
         geom_histogram(aes_string(x = var), color = 'black', fill = 'blue')
     })
   
     output$scatterPlotmodel <- renderPlot({
         var <- input$var
-        price <- house$SalePrice
-        ggplot(data = house, aes(x = !!sym(var), y = SalePrice)) +
+        price <- housesubED$SalePrice
+        ggplot(data = housesubED, aes(x = !!sym(var), y = SalePrice)) +
             geom_point()
 
         
     })
+    
+    })
+    
     # Server stuff for Modeling:
 
    # f <- reactive({
@@ -43,6 +51,34 @@ shinyServer(function(input, output, session) {
         GeneralLinearModel <- glm(SalePrice ~ LotArea + OverallCond, data = house)
         summary(GeneralLinearModel)
         })
+    
+    
+    #Server stuff for Data
+    output$tab <- renderDataTable({
+        #Extract the selected houses, costs, and columns
+        selectedHouses <- unlist(input$selectedhouses)
+        selectedCols <- unlist(input$selectedvar)
+        #Filter the data based on the user input
+        housesub %>% select(selectedCols)
+    })
+    output$downloadData <- downloadHandler(
+        
+        ###
+        # Make the possibly subsetted data downloadable.
+        ###
+        
+        filename = function() {
+            paste("data.csv")
+        },
+        content = function(file) {
+            write.csv(
+                housesub %>%
+                    select(input$selectedCols), 
+                file, 
+                row.names = FALSE
+            )
+        }
+    )
     
 })
     #output$Model_new <-
