@@ -61,7 +61,7 @@ shinyUI(fluidPage(
         br(),
         h4("Type of presentation"),
         radioButtons("type", "Select the Type", choices = 
-          list("Histogram" = "1", "Numeric Summary" = "2", "Scatterplot" = "3"), 
+          c("Histogram" = "1", "Scatterplot" = "2"), 
         selected = "1"),
         br(),
         minY <- min(housesub$SalePrice),
@@ -75,9 +75,9 @@ shinyUI(fluidPage(
                      
     # Show a plot of the generated distribution
                      mainPanel(
-                         plotOutput("distPlot"),
+                         plotOutput("usergraph"),
                          textOutput("PriceRange"),
-                         plotOutput("scatterPlotmodel"),
+                        # plotOutput("scatterPlotmodel"),
                          #box(title = "Data Summary",
                            #solidHeader = TRUE,
                            verbatimTextOutput("summaryDset")

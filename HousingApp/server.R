@@ -25,25 +25,28 @@ shinyServer(function(input, output, session) {
   myHouse <- reactive({
     housesub %>% filter((SalePrice >= input$priceED[1]) & (SalePrice <= input$priceED[2]))
   })
+  
+  
       output$summaryDset <- renderPrint({
         summary(housesub[[input$var]])
     })
     
- 
-    output$distPlot <- renderPlot({
+ output$usergraph <- renderPlot({
+   
+   if(input$type == 1) {
         var <- input$var
         ggplot(data = housesub) + 
         geom_histogram(aes_string(x = var), color = 'black', fill = 'blue')
-    })
+   }
+   else{
     
 #This one works:
-   output$scatterPlotmodel <- renderPlot({
       var <- input$var
      price <- housesub$SalePrice
       ggplot(data = housesub, aes(x = !!sym(var), y = SalePrice)) + 
          geom_point()  + ylim(as.numeric(input$priceED[1]), as.numeric(input$priceED[2]))
-   })
-    
+   }
+ })
   #  output$scatterPlotmodel <- renderPlot({
    #   var <- input$var
     #  myHouse <- reactive({
