@@ -2,6 +2,8 @@
 # Final project of blood, sweat, tears...and fun!
 
 library(shiny)
+library(tidyverse)
+library(DT)
 
 
 data("train.csv")
@@ -67,13 +69,14 @@ shinyUI(fluidPage(
         sliderInput("priceED", "Price Range:",
                     min = minY,
                     max = maxY,
-                    value = c(minY, maxY)
+                    value = c(50000, 400000)
                      )
         ), # This ends Side Panel ED
                      
     # Show a plot of the generated distribution
                      mainPanel(
                          plotOutput("distPlot"),
+                         textOutput("PriceRange"),
                          plotOutput("scatterPlotmodel"),
                          #box(title = "Data Summary",
                            #solidHeader = TRUE,
