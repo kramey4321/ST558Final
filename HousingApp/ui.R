@@ -75,9 +75,12 @@ shinyUI(fluidPage(
                      
     # Show a plot of the generated distribution
                      mainPanel(
+                       
+                      
                          plotOutput("usergraph"),
                          textOutput("PriceRange"),
-                        # plotOutput("scatterPlotmodel"),
+                         # Don't need this plot, but so excited it worked!
+                        #plotOutput("scatterPlotmodel2"),
                          #box(title = "Data Summary",
                            #solidHeader = TRUE,
                            verbatimTextOutput("summaryDset")
@@ -100,7 +103,7 @@ shinyUI(fluidPage(
                      
           #Online code to add a train/test split 
           
-           sliderInput("Slider1", h3("Train/Test Split %"),
+           sliderInput("split", h3("Train/Test Split %"),
               min = 0, 
               max = 100,
               value = 75
@@ -147,18 +150,19 @@ shinyUI(fluidPage(
                              "YearBuilt", "Square Footage" = "GrLivArea", 
                             "# of Bedrooms" = "BedroomAbvGr", "Total # of Rooms" = 
                               "TotRmsAbvGrd"),
-                     selected =  c("Lot Size"="LotArea", "Quality" = "OverallQual",
-                                  "Condition" = "OverallCond", "Year Built" = 
-                                  "YearBuilt", "Square Footage" = "GrLivArea", 
-                               "# of Bedrooms" = "BedroomAbvGr", "Total # of Rooms" = 
-                                 "TotRmsAbvGrd"),
+                     selected =  c("Lot Size"="LotArea"),
+                     #"Quality" = "OverallQual",
+                                  #"Condition" = "Ove,rallCond", "Year Built" = 
+                               #   "YearBuilt", "Square Footage" = "GrLivArea", 
+                               #"# of Bedrooms" = "BedroomAbvGr", "Total # of Rooms" = 
+                               #  "TotRmsAbvGrd"),
                       multiple = TRUE,
                      selectize = TRUE
                      ),
                      # Create a filter for the columns to display.
-                    # selectInput(
-                     #  inputId = "selectedCols",
-                      # label = "Filter Columns",
+                     #selectInput(
+                     #inputId = "selectedCols",
+                      #label = "Filter Columns",
                        #choices = colnames(countyData),
                        #elected = colnames(countyData),
                       # multiple = TRUE,

@@ -3,6 +3,7 @@
 library(shiny)
 library(tidyverse)
 library(DT)
+library(caret)
 data("train.csv")
 house <- read_csv("train.csv")
 #subset data to interesting variables
@@ -22,6 +23,8 @@ shinyServer(function(input, output, session) {
   
     #housesub %>% filter((housesub$SalePrice >= sliderValues[1]) & 
                        # (housesub$SalePrice <= sliderValues[2]))
+  
+  #code to subset data based on slider, now can call myHouse()
   myHouse <- reactive({
     housesub %>% filter((SalePrice >= input$priceED[1]) & (SalePrice <= input$priceED[2]))
   })
@@ -40,34 +43,34 @@ shinyServer(function(input, output, session) {
    }
    else{
     
-#This one works:
+#This one works (kind of lame though):
       var <- input$var
      price <- housesub$SalePrice
       ggplot(data = housesub, aes(x = !!sym(var), y = SalePrice)) + 
          geom_point()  + ylim(as.numeric(input$priceED[1]), as.numeric(input$priceED[2]))
    }
  })
-  #  output$scatterPlotmodel <- renderPlot({
-   #   var <- input$var
-    #  myHouse <- reactive({
-     #   housesub %>% filter((SalePrice >= input$priceED[1]) & (SalePrice <= input$priceED[2]))
-      #})
-      #range <- input$priceED
-      #price <- myHouse$SalePrice
-      #ggplot(data = myHouse, aes(x = !!sym(var), y = SalePrice), ylim = range()) +
-       # geom_point()
-  #  })
+  # HUZZAH!! This one actually filters the data! :)
+ myHouse <- reactive({
+   housesub %>% filter((SalePrice >= input$priceED[1]) & (SalePrice <= input$priceED[2]))
+ })
+ output$scatterPlotmodel2 <- renderPlot({
+      var <- input$var
+      ggplot(data = myHouse(), aes(x = !!sym(var), y = SalePrice)) +
+        geom_point()
+   })
     
     
     # Server stuff for Modeling:
 
-   # f <- reactive({
-       #as.formula(paste(SalePrice ~ , data = house))
-    #})
+ # Filtering the data based on the Training/Testing split the user chooses.  
+#     createDataPartition(housesub, p = input$split, list = FALSE) 
+#   })
 
-    
-    
-    output$Model <- renderPrint({
+ #houseTrain <- housesub[trainIndex(),]
+# houseTest <- housesub[-trainIndex(),]
+
+output$Model <- renderPrint({
         GeneralLinearModel <- glm(SalePrice ~ LotArea + OverallCond, data = house)
         summary(GeneralLinearModel)
         })
@@ -82,7 +85,8 @@ shinyServer(function(input, output, session) {
         selectedHouses <- unlist(input$selectedhouses)
         selectedCols <- unlist(input$selectedvar)
         #Filter the data based on the user input
-        housesub %>% select(selectedCols)
+              #Filter by price (rows)
+        housesub %>%  select(SalePrice, input$selectedvar) %>% filter((SalePrice >= input$selectedprices[1]) & (SalePrice <= input$selectedprices[2]))
     })
     output$downloadData <- downloadHandler(
         
