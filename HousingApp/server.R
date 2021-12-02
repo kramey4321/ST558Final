@@ -4,6 +4,8 @@ library(shiny)
 library(tidyverse)
 library(DT)
 library(caret)
+#install.packages("rattle")
+library(rattle)
 data("train.csv")
 house <- read_csv("train.csv")
 #subset data to interesting variables
@@ -14,43 +16,38 @@ housesub <- house %>% select(LotArea, OverallQual, OverallCond, YearBuilt, GrLiv
 shinyServer(function(input, output, session) {
 
 
-    #Filtering the data based on price range
- # PriceRange <- reactive({
- #   input$priceED
-#  })
-  
- # housesub %>% filter((SalePrice >= PriceRange[1]) & (SalePrice <= PriceRange[2]))
-  
-    #housesub %>% filter((housesub$SalePrice >= sliderValues[1]) & 
-                       # (housesub$SalePrice <= sliderValues[2]))
-  
+
   #code to subset data based on slider, now can call myHouse()
   myHouse <- reactive({
     housesub %>% filter((SalePrice >= input$priceED[1]) & (SalePrice <= input$priceED[2]))
   })
   
   
+  #code to print out summary statistics of variable choosen
       output$summaryDset <- renderPrint({
         summary(housesub[[input$var]])
     })
-    
- output$usergraph <- renderPlot({
+      
+  #code to either plot a histogram or a scatterplot based on the user selection
+   output$usergraph <- renderPlot({
    
    if(input$type == 1) {
+     #ED - histogram of variable selected
         var <- input$var
         ggplot(data = housesub) + 
         geom_histogram(aes_string(x = var), color = 'black', fill = 'blue')
    }
    else{
     
-#This one works (kind of lame though):
+#ED - scatterplot This one works (kind of lame though):
       var <- input$var
      price <- housesub$SalePrice
       ggplot(data = housesub, aes(x = !!sym(var), y = SalePrice)) + 
          geom_point()  + ylim(as.numeric(input$priceED[1]), as.numeric(input$priceED[2]))
    }
  })
-  # HUZZAH!! This one actually filters the data! :)
+  # HUZZAH!! This one actually filters the data! :) 
+   #Never referred to this one in the UI, just too satisfying to delete
  myHouse <- reactive({
    housesub %>% filter((SalePrice >= input$priceED[1]) & (SalePrice <= input$priceED[2]))
  })
@@ -108,15 +105,4 @@ output$Model <- renderPrint({
     )
     
 })
-    #output$Model_new <-
-       # renderPrint(
-            #stargazer(
-                #lm(),
-                #type = "text",
-               # title = "Model Results",
-               # digits = 1,
-                #out = "table1.txt"
-            #)
-        #)
-#)
-
+    

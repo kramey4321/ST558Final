@@ -76,22 +76,86 @@ shinyUI(fluidPage(
     # Show a plot of the generated distribution
                      mainPanel(
                        
-                      
+                      # Plot the histogram or scatterplot
                          plotOutput("usergraph"),
+                         
+                         #Show the price range that was selected
                          textOutput("PriceRange"),
+                         
                          # Don't need this plot, but so excited it worked!
                         #plotOutput("scatterPlotmodel2"),
-                         #box(title = "Data Summary",
-                           #solidHeader = TRUE,
-                           verbatimTextOutput("summaryDset")
+                        
+                        #Print out Summary of variable selected
+                            verbatimTextOutput("summaryDset")
                          )
                      ) # This ends DE mainPanel 
                  ), # This ends Data Exploration tab
         
-        tabPanel("Modeling",
+    # Create the Modeling tab with 3 sub-tabs.
+    navbarMenu(
+      
+      # Add a title.
+      title="Modeling",
+      
+      # Add the Modeling Info tab.
+      tabPanel(
+        # Give it a title,
+        title = "Modeling Info",
+        mainPanel(fluidPage(
+          # Give an overview of the modeling excercise.
+          br(),
+          h4("Modeling Info"),
+          "The goal of the modeling section is to find an equation that best",
+          "fits housing prices based on the variables you choose",
+          "We will use 3 types of models: general linear regression, ",
+          "classification trees, and random forests.",
+          br(),
+          br(),
+          # Give an overview of general linear regression.
+          h4("General Linear Regression"),
+          "General Linear Regression is a regression model that takes the whole",
+          "data set and models the response variable using multiple linear",
+          "regression models.",
+          "Its linear form allows for interpretation of the parameters, and the signs ",
+          "tell us if increasing values of a variable makes an ",
+          "outcome more or less likely.  However, the model is not very flexible",
+          "and can not fit extreme values very well.",
+          br(),
+          br(),
+          #Equation - if possible - uiOutput("logRegEx"),
+          "Its linear form allows for interpretation, as the signs ",
+          "tell us if increasing values of a variable makes an ",
+          "outcome more or less likely.",
+          # Give an overview of trees.
+          h4("Trees"),
+          "Unlike General Linear Regression that looks at the entire data, a",
+          "tree based method splits up predictor spaces into regions and ",
+          "creates different predictions for each region. ",
+          br(),
+          br(),
+          
+          # Give an overview of random forests.
+          h4("Random Forests"),
+          "Random forests average across many fitted tress.", 
+          "It can decreases varaince over an individual tree and often",
+          "uses bootstrapping to get multiple samples to fit on.",
+          "This modeling is much more flexible, however, because of",
+          "the way it is created (averaging other trees), you what you gain",
+          "in prediction power, you lose in interpretability.",
+ 
+          br(),
+          br()
+        ))
+      )),
+
+
+    # Tab for fitting the models
+    tabPanel("Modeling",
         sidebarLayout(
           sidebarPanel(
             h1("Let's model some variables!"),
+            
+            # Let's the user pick variables to add 
             h4("Pick the variables you want to add to the model"),
             checkboxGroupInput("CBG",h3("Select From the Choices Below"),
             choices=list("Lot Size"="LotArea", "Quality" = "OverallQual",
@@ -100,38 +164,164 @@ shinyUI(fluidPage(
                         "# of Bedrooms" = "BedroomAbvGr", "Total # of Rooms" = 
                              "TotRmsAbvGrd"),
               width="100%"),
-                     
-          #Online code to add a train/test split 
-          
-           sliderInput("split", h3("Train/Test Split %"),
-              min = 0, 
-              max = 100,
-              value = 75
+            
+            # Allow the user to select the proportion of data to use for
+            # a testing set.
+            numericInput(
+              inputId = "propTesting",
+              label = "Proportion of Data to use for Test Set",
+              value = 0.2,
+              min = 0.1,
+              max = 0.5,
+              step = 0.05
             ),
-          textOutput("cntTrain"),
-          textOutput("cntTest")
-          ), #This ends sidebarPanel
+            
+            
+            # Create a section for the general linear regression parameters.
+            h3("General Linear Regression Parameters"),
+            # Let the user set which variables to use.
+            selectInput(
+              inputId = "glmVars",
+              label = "Variables to Include:",
+              choices = c(
+                "Lot Size"="LotArea",
+              "Quality" = "OverallQual",
+              "Condition" = "OverallCond", 
+              "Year Built" = "YearBuilt",
+              "Square Footage" = "GrLivArea", 
+              "# of Bedrooms" = "BedroomAbvGr", 
+              "Total # of Rooms" = "TotRmsAbvGrd"),
+              
+              selected = c(
+                "Lot Size"="LotArea"
+                ),
+              multiple = TRUE,
+              selectize = TRUE
+            ),
+                     
+            # Create a section for the tree parameters.
+            h3("Tree Parameters"),
+            # Let the user set which variables to use.
+            selectInput(
+              inputId = "treeVars",
+              label = "Variables to Include:",
+              choices = c(
+                "Lot Size"="LotArea",
+                "Quality" = "OverallQual",
+                "Condition" = "OverallCond", 
+                "Year Built" = "YearBuilt",
+                "Square Footage" = "GrLivArea", 
+                "# of Bedrooms" = "BedroomAbvGr", 
+                "Total # of Rooms" = "TotRmsAbvGrd"),
+              
+              selected = c(
+                "Lot Size"="LotArea"
+              ),
+              multiple = TRUE,
+              selectize = TRUE
+            ),
+           
+            # Create a section for the random forest parameters.
+            h3("Random Forest Parameters"),
+            # Let the user select which variables to use.
+            selectInput(
+              inputId = "randForVars",
+              label = "Variables to Include:",
+              choices = c(
+                "Lot Size"="LotArea",
+                "Quality" = "OverallQual",
+                "Condition" = "OverallCond", 
+                "Year Built" = "YearBuilt",
+                "Square Footage" = "GrLivArea", 
+                "# of Bedrooms" = "BedroomAbvGr", 
+                "Total # of Rooms" = "TotRmsAbvGrd"),
+              
+              selected = c(
+                "Lot Size"="LotArea"
+              ),
+              multiple = TRUE,
+              selectize = TRUE
+            ),
+               
+              
+              # Add a button for fitting models.
+              actionButton(
+                inputId = "trainStart",
+                label = "Fit Models"
+              )
+            ),
 
-                     mainPanel(
-                      
-                       verbatimTextOutput("Model")
-                     )#This ends mainPanel
-                 ) #This ends sidebarLayout
-                 
-        ), #This ends Modeling tab
+          # Create the main panel to hold model performances and 
+          # summaries.
+          mainPanel(
+            # Show the test-set accuracies.
+            h3("Test Set Accuracies to 3 decimal places"),
+            dataTableOutput("accTableOutput"),
+            br(),
+            # Show the coefficients of the Logistic Regression Model.
+            h3("Summary of Logistic Regression Model"),
+            dataTableOutput("logRegSummary"),
+            br(),
+            # Show the final tree diagram.
+            h3("Tree Diagram"),
+            plotOutput("treeSummary"),
+            br(),
+            h3("Random Forest Feature Importances"),
+            plotOutput("rfVarImpPlot")
+          ) # closes main Panel
+        )) #This ends the main page for Modeling.
+    ),
+        # Create the prediction tab.
+        tabPanel(
+          # Add a title.
+          title = "Prediction",
+          # Create a sidebar for the user to play with inputs.
+          sidebarPanel(
+            # Add buttons to select which model to use.
+            radioButtons(
+              inputId = "modelType",
+              label = "Choose a Model",
+              inline = TRUE,
+              choiceNames = c(
+                "General Linear Regression", 
+                "Classification Tree", 
+                "Random Forest"
+              ),
+              choiceValues = c("genlin", "tree", "randFor"),
+              selected = "genlin"
+            ),
+            
+            # Add a button for fitting models.
+            actionButton(
+              inputId = "predStart",
+              label = "Predict"
+            ),
+            # Depending on which model to use for prediction, change the
+            # variables shown to match the fitted models.
+            conditionalPanel(
+              condition = "input.modelType == 'genlin'",
+              uiOutput("genlinPredInputs")
+            ),
+            conditionalPanel(
+              condition = "input.modelType == 'tree'",
+              uiOutput("treePredInputs")
+            ),
+            conditionalPanel(
+              condition = "input.modelType == 'randFor'",
+              uiOutput("randForPredInputs")
+            )
+          ),
+          # Create the main panel to show predictions.
+          mainPanel(
+            h3("Predicted Winner of a County with Your Inputs"),
+            dataTableOutput("preds")
+          ), #End of Main Panel for Predictions
+
         
         tabPanel("Data",
                    sidebarPanel(
-                     # Create a filter for houses - seems silly, taking out
-                     #selectInput(
-                      # inputId = "selectedhouses",
-                       #label = "Filter by house(s)",
-                      # choices = unique(housesub),
-                      # selected = unique(housesub),
-                      # multiple = TRUE,
-                       #selectize = TRUE
-                   #  ),
-                     # Create a filter for Price - hmm...How can I do a range?...
+                     # Create a filter for Rows
+                     #Price - hmm...How can I do a range?...
                      # A slider!!!
                      
                      minY <- min(housesub$SalePrice),
@@ -141,7 +331,8 @@ shinyUI(fluidPage(
                                              max = maxY,
                                              value = c(minY, maxY)
                      ),
-                     # Create a filter for the variables.
+                     
+                     # Create a filter for the columns.
                      selectInput(
                       inputId = "selectedvar",
                      label = "Filter by variable(s)",
@@ -151,40 +342,22 @@ shinyUI(fluidPage(
                             "# of Bedrooms" = "BedroomAbvGr", "Total # of Rooms" = 
                               "TotRmsAbvGrd"),
                      selected =  c("Lot Size"="LotArea"),
-                     #"Quality" = "OverallQual",
-                                  #"Condition" = "Ove,rallCond", "Year Built" = 
-                               #   "YearBuilt", "Square Footage" = "GrLivArea", 
-                               #"# of Bedrooms" = "BedroomAbvGr", "Total # of Rooms" = 
-                               #  "TotRmsAbvGrd"),
                       multiple = TRUE,
                      selectize = TRUE
                      ),
-                     # Create a filter for the columns to display.
-                     #selectInput(
-                     #inputId = "selectedCols",
-                      #label = "Filter Columns",
-                       #choices = colnames(countyData),
-                       #elected = colnames(countyData),
-                      # multiple = TRUE,
-                      # selectize = TRUE
-                    # ),
+
                      # Create a download button to download the data set.
-                     sidebarPanel(downloadButton("downloadData", "Download"))
-                   ),
+                     sidebarPanel(downloadButton("downloadData", "Download")),
+                   
+                 
                    # Display the filtered data on the main panel.
                    mainPanel(
                     dataTableOutput(outputId = "tab")
-                 #sidebarLayout(
-                  #   sidebarPanel(
-                   #      h1("Pick what you want")
-                    # ), #This ends sidebarPanel
-                     #mainPanel(
-                      #   h1("Code to give it to you")
                      )#This ends mainPanel
                  ) #This ends sidebarLayout
                  
         ) #This ends Data tab         
-        #This ends navbarPage
+        )#This ends navbarPage
     )
     #This ends ShinyUI Fluidpage
 )
