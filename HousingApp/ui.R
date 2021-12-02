@@ -146,11 +146,11 @@ shinyUI(fluidPage(
           br(),
           br()
         ))
-      )),
+      ),
 
 
     # Tab for fitting the models
-    tabPanel("Modeling",
+    tabPanel("Customize your Model",
         sidebarLayout(
           sidebarPanel(
             h1("Let's model some variables!"),
@@ -269,7 +269,7 @@ shinyUI(fluidPage(
             h3("Random Forest Feature Importances"),
             plotOutput("rfVarImpPlot")
           ) # closes main Panel
-        )) #This ends the main page for Modeling.
+        ) #This ends the main page for Customized model.
     ),
         # Create the prediction tab.
         tabPanel(
@@ -316,7 +316,7 @@ shinyUI(fluidPage(
             h3("Predicted Winner of a County with Your Inputs"),
             dataTableOutput("preds")
           ), #End of Main Panel for Predictions
-
+)),
         
         tabPanel("Data",
                    sidebarPanel(
