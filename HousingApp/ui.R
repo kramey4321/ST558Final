@@ -115,7 +115,15 @@ shinyUI(fluidPage(
           h4("General Linear Regression"),
           "General Linear Regression is a regression model that takes the whole",
           "data set and models the response variable using multiple linear",
-          "regression models.",
+          "regression models.  It uses the sum of square errors to find the parameters",
+          
+          # Code for sum of square error
+            withMathJax(
+              helpText("$$\\sum_{i=1}^n (y_i-\\hat{y_i})^2$$")
+            
+          ),
+          
+          
           "Its linear form allows for interpretation of the parameters, and the signs ",
           "tell us if increasing values of a variable makes an ",
           "outcome more or less likely.  However, the model is not very flexible",
@@ -133,6 +141,11 @@ shinyUI(fluidPage(
           "creates different predictions for each region. ",
           br(),
           br(),
+          "The upside of trees is that it is very user friendly and",
+          "the tree diagram is very easy for a laymen to understand the splits",
+          "The downside is the with all of these branches, this model is more",
+          "suited for prediction not inference.",
+
           
           # Give an overview of random forests.
           h4("Random Forests"),
@@ -140,7 +153,7 @@ shinyUI(fluidPage(
           "It can decreases varaince over an individual tree and often",
           "uses bootstrapping to get multiple samples to fit on.",
           "This modeling is much more flexible, however, because of",
-          "the way it is created (averaging other trees), you what you gain",
+          "the way it is created (averaging other trees), what you gain",
           "in prediction power, you lose in interpretability.",
  
           br(),
@@ -153,7 +166,7 @@ shinyUI(fluidPage(
     tabPanel("Customize your Model",
         sidebarLayout(
           sidebarPanel(
-            h1("Let's model some variables!"),
+            h1("Let's model some Prices!"),
             
             # Let's the user pick variables to add 
             h4("Pick the variables you want to add to the model"),
@@ -259,8 +272,8 @@ shinyUI(fluidPage(
             dataTableOutput("accTableOutput"),
             br(),
             # Show the coefficients of the Logistic Regression Model.
-            h3("Summary of Logistic Regression Model"),
-            dataTableOutput("logRegSummary"),
+            h3("Summary of General Linear Regression Model"),
+            dataTableOutput("glmSummary"),
             br(),
             # Show the final tree diagram.
             h3("Tree Diagram"),
@@ -313,7 +326,7 @@ shinyUI(fluidPage(
           ),
           # Create the main panel to show predictions.
           mainPanel(
-            h3("Predicted Winner of a County with Your Inputs"),
+            h3("Predicted House Price with Your Inputs"),
             dataTableOutput("preds")
           ), #End of Main Panel for Predictions
 )),
@@ -347,14 +360,15 @@ shinyUI(fluidPage(
                      ),
 
                      # Create a download button to download the data set.
-                     sidebarPanel(downloadButton("downloadData", "Download")),
-                   
-                 
+                     downloadButton("downloadData", "Download"),
+
+                   ), #This ends sidebarLayout
                    # Display the filtered data on the main panel.
                    mainPanel(
-                    dataTableOutput(outputId = "tab")
+                     "YO",
+
+                    dataTableOutput(outputId = "tablesub")
                      )#This ends mainPanel
-                 ) #This ends sidebarLayout
                  
         ) #This ends Data tab         
         )#This ends navbarPage
