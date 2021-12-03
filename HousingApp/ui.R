@@ -123,7 +123,6 @@ shinyUI(fluidPage(
             
           ),
           
-          
           "Its linear form allows for interpretation of the parameters, and the signs ",
           "tell us if increasing values of a variable makes an ",
           "outcome more or less likely.  However, the model is not very flexible",
@@ -167,19 +166,6 @@ shinyUI(fluidPage(
         sidebarLayout(
           sidebarPanel(
             h1("Let's model some Prices!"),
-            
-            # Allow the user to select the proportion of data to use for
-            # a testing set.
-            numericInput(
-              inputId = "propTesting",
-              label = "Proportion of Data to use for Test Set",
-              value = 0.2,
-              min = 0.1,
-              max = 0.5,
-              step = 0.05
-            ),
-            # Show test/train split
-            textOutput("datasets"),
             
             # Create a section for the general linear regression parameters.
             h3("General Linear Regression Parameters"),
@@ -259,21 +245,9 @@ shinyUI(fluidPage(
           # summaries.
           mainPanel(
             # Show test/train split
-            textOutput("datasets"),
-            # Show the test-set accuracies.
-            h3("Test Set Accuracies to 3 decimal places"),
-            dataTableOutput("accTableOutput"),
+            "A really, really cool model!",
             br(),
-            # Show the coefficients of the Regression Model.
-            #h3("Summary of General Linear Regression Model"),
-            #dataTableOutput("glmSummary"),
-            br(),
-            # Show the final tree diagram.
-            h3("Tree Diagram"),
-            plotOutput("treeSummary"),
-            br(),
-            h3("Random Forest Feature Importances"),
-            plotOutput("rfVarImpPlot")
+            
           ) # closes main Panel
         ) #This ends the main page for Customized model.
     ),
@@ -301,28 +275,16 @@ shinyUI(fluidPage(
             actionButton(
               inputId = "predStart",
               label = "Predict"
-            ),
-            # Depending on which model to use for prediction, change the
-            # variables shown to match the fitted models.
-            #conditionalPanel(
-              #condition = "input.modelType == 'genlin'",
-             # uiOutput("genlinPredInputs")
-           # ),
-            conditionalPanel(
-              condition = "input.modelType == 'tree'",
-              uiOutput("treePredInputs")
-            ),
-            conditionalPanel(
-              condition = "input.modelType == 'randFor'",
-              uiOutput("randForPredInputs")
             )
-          ),
+          ), # End of sidebar
           # Create the main panel to show predictions.
           mainPanel(
-            h3("Predicted House Price with Your Inputs"),
-            dataTableOutput("preds")
+            "This house probably cost a ton more now...but here's",
+             "what your model predicted",
+
           ), #End of Main Panel for Predictions
-)),
+)
+), #End of the 3 sub tabs
         
         tabPanel("Data",
                    sidebarPanel(
@@ -351,14 +313,14 @@ shinyUI(fluidPage(
                       multiple = TRUE,
                      selectize = TRUE
                      ),
-                     dataTableOutput(outputId = "tablesub"),
+                 
                      # Create a download button to download the data set.
                      downloadButton("downloadData", "Download"),
 
                    ), #This ends sidebarLayout
                    # Display the filtered data on the main panel.
                    mainPanel(
-                     "YO",
+                     "YO- this works, so where's the flippin' table??",
 
                     dataTableOutput(outputId = "tablesub")
                      )#This ends mainPanel

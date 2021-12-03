@@ -58,10 +58,13 @@ shinyServer(function(input, output, session) {
         ggplot(data = myHouse(), aes(x = !!sym(var), y = SalePrice)) +
         geom_point()
          })
-    
-    
+#################################
+        ##  MODELING Stuff = why won't you work?!!!
     # Server stuff for Modeling:
 
+       
+        # Creating an input for the user to determine the test/training split
+        
         #Create the train and test data sets
         traindata <- eventReactive(input$splitbutton,{
           set.seed(1234)
@@ -86,126 +89,7 @@ shinyServer(function(input, output, session) {
           result <- paste("The train data has", train, "rows and the test data has", test, "rows")
           print(result)
         })
-        
-        
-        observeEvent(input$trainStart, {
-          
-          ###
-          # Test the performance of the three models.
-          ###
-          
-          # Create a Progress object
-          progress <- Progress$new()
-          # Make sure it closes when we exit this reactive, even if there's an error.
-          on.exit(progress$close())
-          # Set the message to the user while cross-validation is running.
-          progress$set(message = "Performing Cross-Validation", value = 0)
-          
-          # Get the variables to use for each model.
-          glmVars <- unlist(input$glmVars)
-          treeVars <- unlist(input$treeVars)
-          randForVars <- unlist(input$randForVars)
-          
-          # Get the proportion of testing:
-          propTesting <- input$propTesting
-        
-         
-          # Get the random forest mtrys.
-        #  randForMtry <- as.numeric(input$randForMtry)
-          
-        
-          # Get the testing indexes.
-          testInd <- sample(
-            seq_len(nrow(housesub)), 
-            size=floor(nrow(housesub)*propTesting)
-          )
-          
-          # Split into training and testing sets.
-          train <- housesub[-testInd, ]
-          test <- housesub[testInd, ]
-          
-          #Check to see if training works:
-          output$traintest <- renderPrint({
-            result <- paste("Your Training set has ", 
-                            "rows and your test set",
-            "has rows")
-            print(result)
-          })
-          
-          # Suppress any warning in the fitting process.
-          suppressWarnings(library(caret))
-          
-          # Set the repeated CV params.
-          TrControl <- trainControl(
-            method="cv",
-            number=5
-          )
-          
-          # Evaluate the General Linear Model through CV.
-          glmModel = train(
-            SalePrice ~ ., 
-            data=train[, c(c("SalePrice"), glmVars)],
-            method = "glm",
-           # family = "binomial",
-            metric="Accuracy",
-            trControl=TrControl
-          )
-          
-          # Increment the progress bar, and update the detail text.
-          progress$inc(0.4, detail = "Classification Tree")
-          
-          # Let caret choose the best tree through CV.
-          treeModel = train(
-            SalePrice ~ ., 
-            data=train[, c(c("SalePrice"), treeVars)],
-            method="rpart", 
-            metric="Accuracy",
-            #tuneGrid=expand.grid(cp = Cps),
-            trControl=TrControl
-          )
-          
-          # Increment the progress bar, and update the detail text.
-          progress$inc(0.6, detail = "Random Forest")
-          
-          # Let caret choose the best random forest through CV.
-          rfModel = train(
-            SalePrice ~ ., 
-            data=train[, c(c("SalePrice"), randForVars)],
-            method="rf", 
-            metric="Accuracy",
-            tuneGrid=expand.grid(mtry = randForMtry),
-            trControl=TrControl
-          )
-          
-          # Increment the progress bar, and update the detail text.
-          progress$inc(0.8, detail = "Evaluating Test Set Performance")
-          
-          # Get test set predictions.
-          glmPreds <- predict(glmModel, test, type="raw")
-          treePreds <- predict(treeModel, test, type="raw")
-          randForPreds <- predict(rfModel, test, type="raw")
-          
 
-          # Create an output for the logistic regression model rounding to 4 decimals.
-          output$logRegSummary <- renderDataTable({
-            round(as.data.frame(summary(logRegModel)$coef), 4)
-          })
-          
-          # Create a nice tree diagram.
-          output$treeSummary <- renderPlot({
-            fancyRpartPlot(treeModel$finalModel)
-          })
-          
-          # Create an output for the feature importance plot for random forest model.
-          output$rfVarImpPlot <- renderPlot({
-            ggplot(varImp(rfModel, type=2)) + 
-              geom_col(fill="purple") + 
-              ggtitle("Most Important Features by Decrease in Gini Impurity")
-          })
-#output$Model <- renderPrint({
-       # GeneralLinearModel <- glm(SalePrice ~ LotArea + OverallCond, data = house)
-      #  summary(GeneralLinearModel)
-       # })
     
     # Seeing if the slider is talking to the UI and server...
     output$PriceRange <- renderText({
@@ -225,14 +109,10 @@ shinyServer(function(input, output, session) {
           filter((SalePrice >= input$selectedprices[1]) & (SalePrice <= input$selectedprices[2]))
     })
     
-    
+    # Making the file downloadable
     
     output$downloadData <- downloadHandler(
-        
-        ###
-        # Make the possibly subsetted data downloadable.
-        ###
-        
+
         filename = function() {
             paste("data.csv")
         },
@@ -246,6 +126,6 @@ shinyServer(function(input, output, session) {
         }
     )
     
-        })
+      
 })
     
