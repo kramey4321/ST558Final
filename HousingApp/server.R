@@ -6,7 +6,8 @@ library(DT)
 library(caret)
 #install.packages("rattle")
 library(rattle)
-data("train.csv")
+library(randomForest)
+
 house <- read_csv("train.csv")
 #subset data to interesting variables
 housesub <- house %>% select(LotArea, OverallQual, OverallCond, YearBuilt, GrLivArea, 
@@ -61,6 +62,31 @@ shinyServer(function(input, output, session) {
     
     # Server stuff for Modeling:
 
+        #Create the train and test data sets
+        traindata <- eventReactive(input$splitbutton,{
+          set.seed(1234)
+          splitsize <- as.numeric(input$train)
+          numObs <- nrow(house)
+          index <- sample(1:numObs, size = splitsize*numObs, replace =FALSE)
+          traindata <- house[index,]
+        })
+        
+        testdata <- eventReactive(input$splitbutton,{
+          set.seed(1234)
+          splitsize <- as.numeric(input$train)
+          numObs <- nrow(house)
+          index <- sample(1:numObs, size = splitsize*numObs, replace =FALSE)
+          testdata <- house[-index,]
+        })
+        
+        #Show the user how the data was separated
+        output$datasets <- renderPrint({
+          train <- nrow(traindata())
+          test <- nrow(testdata())
+          result <- paste("The train data has", train, "rows and the test data has", test, "rows")
+          print(result)
+        })
+        
         
         observeEvent(input$trainStart, {
           
@@ -85,7 +111,7 @@ shinyServer(function(input, output, session) {
         
          
           # Get the random forest mtrys.
-          randForMtry <- as.numeric(input$randForMtry)
+        #  randForMtry <- as.numeric(input$randForMtry)
           
         
           # Get the testing indexes.
@@ -97,6 +123,14 @@ shinyServer(function(input, output, session) {
           # Split into training and testing sets.
           train <- housesub[-testInd, ]
           test <- housesub[testInd, ]
+          
+          #Check to see if training works:
+          output$traintest <- renderPrint({
+            result <- paste("Your Training set has ", 
+                            "rows and your test set",
+            "has rows")
+            print(result)
+          })
           
           # Suppress any warning in the fitting process.
           suppressWarnings(library(caret))

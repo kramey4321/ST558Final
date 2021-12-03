@@ -168,16 +168,6 @@ shinyUI(fluidPage(
           sidebarPanel(
             h1("Let's model some Prices!"),
             
-            # Let's the user pick variables to add 
-            h4("Pick the variables you want to add to the model"),
-            checkboxGroupInput("CBG",h3("Select From the Choices Below"),
-            choices=list("Lot Size"="LotArea", "Quality" = "OverallQual",
-                         "Condition" = "OverallCond", "Year Built" = 
-                          "YearBuilt", "Square Footage" = "GrLivArea", 
-                        "# of Bedrooms" = "BedroomAbvGr", "Total # of Rooms" = 
-                             "TotRmsAbvGrd"),
-              width="100%"),
-            
             # Allow the user to select the proportion of data to use for
             # a testing set.
             numericInput(
@@ -188,7 +178,8 @@ shinyUI(fluidPage(
               max = 0.5,
               step = 0.05
             ),
-            
+            # Show test/train split
+            textOutput("datasets"),
             
             # Create a section for the general linear regression parameters.
             h3("General Linear Regression Parameters"),
@@ -267,13 +258,15 @@ shinyUI(fluidPage(
           # Create the main panel to hold model performances and 
           # summaries.
           mainPanel(
+            # Show test/train split
+            textOutput("datasets"),
             # Show the test-set accuracies.
             h3("Test Set Accuracies to 3 decimal places"),
             dataTableOutput("accTableOutput"),
             br(),
-            # Show the coefficients of the Logistic Regression Model.
-            h3("Summary of General Linear Regression Model"),
-            dataTableOutput("glmSummary"),
+            # Show the coefficients of the Regression Model.
+            #h3("Summary of General Linear Regression Model"),
+            #dataTableOutput("glmSummary"),
             br(),
             # Show the final tree diagram.
             h3("Tree Diagram"),
@@ -311,10 +304,10 @@ shinyUI(fluidPage(
             ),
             # Depending on which model to use for prediction, change the
             # variables shown to match the fitted models.
-            conditionalPanel(
-              condition = "input.modelType == 'genlin'",
-              uiOutput("genlinPredInputs")
-            ),
+            #conditionalPanel(
+              #condition = "input.modelType == 'genlin'",
+             # uiOutput("genlinPredInputs")
+           # ),
             conditionalPanel(
               condition = "input.modelType == 'tree'",
               uiOutput("treePredInputs")
@@ -358,7 +351,7 @@ shinyUI(fluidPage(
                       multiple = TRUE,
                      selectize = TRUE
                      ),
-
+                     dataTableOutput(outputId = "tablesub"),
                      # Create a download button to download the data set.
                      downloadButton("downloadData", "Download"),
 
